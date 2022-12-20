@@ -2,7 +2,6 @@ package com.crud.web.dto;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.crud.web.dto.HelloResponseDto;
 import org.junit.jupiter.api.Test;
 
 class HelloResponseDtoTest {

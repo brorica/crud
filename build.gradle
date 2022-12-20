@@ -24,8 +24,10 @@ dependencies {
 	implementation 'junit:junit:4.13.1'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'com.h2database:h2:2.1.214'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation 'com.h2database:h2'
+	testImplementation 'com.h2database:h2'
 }
 
 tasks.named('test') {

@@ -1,4 +1,4 @@
-package com.crud.dto;
+package com.crud.web.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
-package com.crud.controller;
+package com.crud.web;
 
-import com.crud.dto.HelloResponseDto;
+import com.crud.web.dto.HelloResponseDto;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

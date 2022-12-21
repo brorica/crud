@@ -1,7 +1,10 @@
 package com.crud.web;
 
+import com.crud.domain.config.auth.LoginUser;
+import com.crud.domain.config.auth.dto.SessionUser;
 import com.crud.service.posts.PostsService;
 import com.crud.web.dto.PostsResponseDto;
+import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,8 +18,11 @@ public class IndexController {
     private final PostsService postsService;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(Model model, @LoginUser SessionUser user) {
         model.addAttribute("posts", postsService.findAllDesc());
+        if (user != null) {
+            model.addAttribute("userName", user.getName());
+        }
         return "index";
     }
 

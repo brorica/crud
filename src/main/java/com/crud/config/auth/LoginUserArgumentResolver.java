@@ -1,6 +1,6 @@
-package com.crud.domain.config.auth;
+package com.crud.config.auth;
 
-import com.crud.domain.config.auth.dto.SessionUser;
+import com.crud.config.auth.dto.SessionUser;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

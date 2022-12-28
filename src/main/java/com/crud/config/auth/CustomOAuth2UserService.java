@@ -1,7 +1,7 @@
-package com.crud.domain.config.auth;
+package com.crud.config.auth;
 
-import com.crud.domain.config.auth.dto.OAuthAttributes;
-import com.crud.domain.config.auth.dto.SessionUser;
+import com.crud.config.auth.dto.OAuthAttributes;
+import com.crud.config.auth.dto.SessionUser;
 import com.crud.domain.user.User;
 import com.crud.domain.user.UserRepository;
 import java.util.Collections;

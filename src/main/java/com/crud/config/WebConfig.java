@@ -1,6 +1,6 @@
-package com.crud.domain.config;
+package com.crud.config;
 
-import com.crud.domain.config.auth.LoginUserArgumentResolver;
+import com.crud.config.auth.LoginUserArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

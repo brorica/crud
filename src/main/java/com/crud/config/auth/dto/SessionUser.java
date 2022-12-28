@@ -1,4 +1,4 @@
-package com.crud.domain.config.auth.dto;
+package com.crud.config.auth.dto;
 
 import com.crud.domain.user.User;
 import java.io.Serializable;

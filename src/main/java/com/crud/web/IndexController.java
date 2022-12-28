@@ -1,10 +1,9 @@
 package com.crud.web;
 
-import com.crud.domain.config.auth.LoginUser;
-import com.crud.domain.config.auth.dto.SessionUser;
+import com.crud.config.auth.LoginUser;
+import com.crud.config.auth.dto.SessionUser;
 import com.crud.service.posts.PostsService;
 import com.crud.web.dto.PostsResponseDto;
-import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

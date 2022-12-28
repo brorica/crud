@@ -1,4 +1,4 @@
-package com.crud.domain.config.auth;
+package com.crud.config.auth;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

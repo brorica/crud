@@ -1,4 +1,4 @@
-package com.crud.domain.config.auth;
+package com.crud.config.auth;
 
 import com.crud.domain.user.Role;
 import lombok.RequiredArgsConstructor;

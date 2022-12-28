@@ -1,7 +1,5 @@
 #!/bin/bash
 
-REPO#!/bin/bash
-
 REPOSITORY=/home/ec2-user/app/step3
 PROJECT_NAME=crud
 

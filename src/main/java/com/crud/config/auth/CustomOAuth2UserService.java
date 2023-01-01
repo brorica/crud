@@ -16,6 +16,10 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+/**
+ * oauth2를 통해 최종적으로 사용자 정보를 받아왔을 때 처리하는 곳
+ * 유저 정보를 생성, 갱신하고 세션을 만든다.
+ */
 @RequiredArgsConstructor
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {

@@ -25,6 +25,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .logout()
                     .logoutSuccessUrl("/")
+            /**
+             * oauth2 로그인에 대한 처리 로직
+             * access_token 받는 과정같은 자잘한 부분은 oauth2-client 에서 처리해준다.
+             */
             .and()
                 .oauth2Login()
                     .userInfoEndpoint()

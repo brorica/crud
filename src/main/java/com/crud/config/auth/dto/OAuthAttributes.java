@@ -28,6 +28,10 @@ public class OAuthAttributes {
 
     public static OAuthAttributes of(String registrationId,
         String userNameAttributeName, Map<String, Object> attributes) {
+        /**
+         * oauth2-client의 경우 국내 기업에 대한 부분은 구현을 하지 않았기 때문에
+         * registrationId 를 보고 구분해야 한다.
+         */
         if ("naver".equals(registrationId)) {
             return ofNaver("id", attributes);
         }

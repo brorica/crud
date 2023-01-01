@@ -13,6 +13,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final LoginUserArgumentResolver loginUserArgumentResolver;
 
+    /**
+     * 커스텀 매개변수 resolver는 따로 등록해야 한다.
+     */
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
         argumentResolvers.add(loginUserArgumentResolver);

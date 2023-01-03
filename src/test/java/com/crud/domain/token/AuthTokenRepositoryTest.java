@@ -14,21 +14,22 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class TokenRepositoryTest {
+public class AuthTokenRepositoryTest {
 
     @Autowired
-    TokenRepository tokenRepository;
+    AuthTokenRepository authTokenRepository;
 
     @After
     public void cleanup() {
-        tokenRepository.deleteAll();
+        authTokenRepository.deleteAll();
     }
 
     @Test
     public void 액세스_토큰_검증() {
         //given
         UUID accessToken = UUID.randomUUID();
-        tokenRepository.save(Token.builder()
+        authTokenRepository.save(AuthToken.builder()
+            .uid(1L)
             .dueDate(LocalDateTime.now())
             .accessToken(accessToken)
             .refreshToken(UUID.randomUUID())
@@ -36,18 +37,19 @@ public class TokenRepositoryTest {
         );
 
         //when
-        List<Token> tokenList = tokenRepository.findAll();
+        List<AuthToken> authTokenList = authTokenRepository.findAll();
 
         //then
-        Token getToken = tokenList.get(0);
-        assertThat(getToken.getAccessToken()).isEqualTo(accessToken.toString());
+        AuthToken getAuthToken = authTokenList.get(0);
+        assertThat(getAuthToken.getAccessToken()).isEqualTo(accessToken.toString());
     }
 
     @Test
     public void 리프레시_토큰_검증() {
         //given
         UUID refreshToken = UUID.randomUUID();
-        tokenRepository.save(Token.builder()
+        authTokenRepository.save(AuthToken.builder()
+            .uid(1L)
             .dueDate(LocalDateTime.now())
             .accessToken(UUID.randomUUID())
             .refreshToken(refreshToken)
@@ -55,18 +57,19 @@ public class TokenRepositoryTest {
         );
 
         //when
-        List<Token> tokenList = tokenRepository.findAll();
+        List<AuthToken> authTokenList = authTokenRepository.findAll();
 
         //then
-        Token getToken = tokenList.get(0);
-        assertThat(getToken.getRefreshToken()).isEqualTo(refreshToken.toString());
+        AuthToken getAuthToken = authTokenList.get(0);
+        assertThat(getAuthToken.getRefreshToken()).isEqualTo(refreshToken.toString());
     }
 
     @Test
     public void 액세스_토큰_기한은_1시간() {
         //given
         LocalDateTime now = LocalDateTime.now();
-        tokenRepository.save(Token.builder()
+        authTokenRepository.save(AuthToken.builder()
+            .uid(1L)
             .dueDate(now)
             .accessToken(UUID.randomUUID())
             .refreshToken(UUID.randomUUID())
@@ -74,10 +77,10 @@ public class TokenRepositoryTest {
         );
 
         //when
-        List<Token> tokenList = tokenRepository.findAll();
+        List<AuthToken> authTokenList = authTokenRepository.findAll();
 
         //then
-        Token getToken = tokenList.get(0);
-        assertThat(getToken.getDueDate()).isEqualTo(now.plusSeconds(3600));
+        AuthToken getAuthToken = authTokenList.get(0);
+        assertThat(getAuthToken.getDueDate()).isEqualTo(now.plusSeconds(3600));
     }
 }

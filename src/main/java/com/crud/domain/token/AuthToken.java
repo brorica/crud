@@ -1,6 +1,5 @@
 package com.crud.domain.token;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,9 +28,6 @@ public class AuthToken {
     @Column(nullable = false)
     private String refreshToken;
 
-    /**
-     * 액세스 토큰 기간은 1시간
-     */
     @Builder
     public AuthToken(Long uid, UUID accessToken, UUID refreshToken) {
         this.uid = uid;

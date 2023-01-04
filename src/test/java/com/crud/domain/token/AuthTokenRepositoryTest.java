@@ -2,7 +2,6 @@ package com.crud.domain.token;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.junit.After;
@@ -30,7 +29,6 @@ public class AuthTokenRepositoryTest {
         UUID accessToken = UUID.randomUUID();
         authTokenRepository.save(AuthToken.builder()
             .uid(1L)
-            .dueDate(LocalDateTime.now())
             .accessToken(accessToken)
             .refreshToken(UUID.randomUUID())
             .build()
@@ -50,7 +48,6 @@ public class AuthTokenRepositoryTest {
         UUID refreshToken = UUID.randomUUID();
         authTokenRepository.save(AuthToken.builder()
             .uid(1L)
-            .dueDate(LocalDateTime.now())
             .accessToken(UUID.randomUUID())
             .refreshToken(refreshToken)
             .build()
@@ -62,25 +59,5 @@ public class AuthTokenRepositoryTest {
         //then
         AuthToken getAuthToken = authTokenList.get(0);
         assertThat(getAuthToken.getRefreshToken()).isEqualTo(refreshToken.toString());
-    }
-
-    @Test
-    public void 액세스_토큰_기한은_1시간() {
-        //given
-        LocalDateTime now = LocalDateTime.now();
-        authTokenRepository.save(AuthToken.builder()
-            .uid(1L)
-            .dueDate(now)
-            .accessToken(UUID.randomUUID())
-            .refreshToken(UUID.randomUUID())
-            .build()
-        );
-
-        //when
-        List<AuthToken> authTokenList = authTokenRepository.findAll();
-
-        //then
-        AuthToken getAuthToken = authTokenList.get(0);
-        assertThat(getAuthToken.getDueDate()).isEqualTo(now.plusSeconds(3600));
     }
 }

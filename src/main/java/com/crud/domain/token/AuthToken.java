@@ -24,9 +24,6 @@ public class AuthToken {
     private Long uid;
 
     @Column(nullable = false)
-    private LocalDateTime dueDate;
-
-    @Column(nullable = false)
     private String accessToken;
 
     @Column(nullable = false)
@@ -36,9 +33,8 @@ public class AuthToken {
      * 액세스 토큰 기간은 1시간
      */
     @Builder
-    public AuthToken(Long uid, LocalDateTime dueDate, UUID accessToken, UUID refreshToken) {
+    public AuthToken(Long uid, UUID accessToken, UUID refreshToken) {
         this.uid = uid;
-        this.dueDate = dueDate.plusSeconds(3600);
         this.accessToken = accessToken.toString();
         this.refreshToken = refreshToken.toString();
     }

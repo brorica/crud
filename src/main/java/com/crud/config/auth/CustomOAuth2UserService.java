@@ -68,7 +68,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private AuthToken saveOrUpdateToken(User user) {
         AuthToken token = AuthToken.builder()
             .uid(user.getId())
-            .dueDate(LocalDateTime.now())
             .accessToken(UUID.randomUUID())
             .refreshToken(UUID.randomUUID())
             .build();

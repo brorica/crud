@@ -21,11 +21,7 @@ public class JwtManagerTest extends TestCase {
     @Test
     public void jwt_토큰_생성() {
         //given
-        AuthToken token = AuthToken.builder()
-            .uid(1L)
-            .accessToken(UUID.randomUUID())
-            .refreshToken(UUID.randomUUID())
-            .build();
+        AuthToken token = createToken(UUID.randomUUID(), UUID.randomUUID());
         //when
         String jwt = jwtManager.createJwt(token);
         //then
@@ -35,14 +31,40 @@ public class JwtManagerTest extends TestCase {
     @Test
     public void jwt_토큰_검증() {
         //given
-        AuthToken token = AuthToken.builder()
-            .uid(1L)
-            .accessToken(UUID.randomUUID())
-            .refreshToken(UUID.randomUUID())
-            .build();
+        AuthToken token = createToken(UUID.randomUUID(), UUID.randomUUID());
         //when
         String jwt = jwtManager.createJwt(token);
         //then
         assertThat(jwtManager.validate(jwt)).isTrue();
+    }
+
+    @Test
+    public void jwt_액세스_토큰_가져오기() {
+        //given
+        UUID accessToken = UUID.randomUUID();
+        AuthToken token = createToken(accessToken, UUID.randomUUID());
+        //when
+        String jwt = jwtManager.createJwt(token);
+        //then
+        assertThat(jwtManager.getAccessTokenFromToken(jwt)).isEqualTo(accessToken.toString());
+    }
+
+    @Test
+    public void jwt_리프레시_토큰_가져오기() {
+        //given
+        UUID refreshToken = UUID.randomUUID();
+        AuthToken token = createToken(UUID.randomUUID(), refreshToken);
+        //when
+        String jwt = jwtManager.createJwt(token);
+        //then
+        assertThat(jwtManager.getRefreshTokenFromToken(jwt)).isEqualTo(refreshToken.toString());
+    }
+
+    private AuthToken createToken(UUID accessToken, UUID refreshToken) {
+        return AuthToken.builder()
+            .uid(1L)
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
     }
 }

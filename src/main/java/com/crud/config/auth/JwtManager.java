@@ -5,25 +5,25 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Base64Utils;
 
 @Component
 public class JwtManager {
 
+    private final String refreshToken = "refreshToken";
+    private final String accessToken = "accessToken";
     private final long duration = 60 * 60 * 1000;
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String createJwt(AuthToken token) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("accessToken", token.getAccessToken());
-        claims.put("refreshToken", token.getRefreshToken());
+        claims.put(accessToken, token.getAccessToken());
+        claims.put(refreshToken, token.getRefreshToken());
         Date now = new Date();
         return Jwts.builder()
             .setSubject("crud")
@@ -48,7 +48,7 @@ public class JwtManager {
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
+        Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
@@ -57,5 +57,15 @@ public class JwtManager {
             .setSigningKey(key)
             .build()
             .parseClaimsJws(token).getBody();
+    }
+
+    public String getAccessTokenFromToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return (String) claims.get(accessToken);
+    }
+
+    public String getRefreshTokenFromToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return (String) claims.get(refreshToken);
     }
 }

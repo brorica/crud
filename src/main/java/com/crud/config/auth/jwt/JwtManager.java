@@ -1,4 +1,4 @@
-package com.crud.config.auth;
+package com.crud.config.auth.jwt;
 
 import com.crud.domain.token.AuthToken;
 import io.jsonwebtoken.Claims;

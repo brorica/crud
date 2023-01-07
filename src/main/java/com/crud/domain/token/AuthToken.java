@@ -34,4 +34,8 @@ public class AuthToken {
         this.accessToken = accessToken.toString();
         this.refreshToken = refreshToken.toString();
     }
+
+    public void updateAccessToken() {
+        this.accessToken = UUID.randomUUID().toString();
+    }
 }

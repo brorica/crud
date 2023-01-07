@@ -2,6 +2,7 @@ package com.crud.config.auth;
 ;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.crud.config.auth.jwt.JwtManager;
 import com.crud.domain.token.AuthToken;
 import java.util.UUID;
 import junit.framework.TestCase;

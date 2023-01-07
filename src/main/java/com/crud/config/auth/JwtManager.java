@@ -2,9 +2,6 @@ package com.crud.config.auth;
 
 import com.crud.domain.token.AuthToken;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -13,14 +10,15 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Base64Utils;
 
 @Component
 public class JwtManager {
 
     private final long duration = 60 * 60 * 1000;
-    private final String secret = "spring-boot-crud-practice-jwt-test-key";
-    private final Key key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String createJwt(AuthToken token) {
         Map<String, Object> claims = new HashMap<>();
@@ -32,19 +30,32 @@ public class JwtManager {
             .setClaims(claims)
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + duration))
-            .signWith(key, SignatureAlgorithm.HS256)
+            .signWith(key)
             .compact();
     }
 
-    public Jwt<Header, Claims> validate(String jwt) {
-        Jwt<Header, Claims> headerClaimsJwt = null;
-        try {
-            headerClaimsJwt = Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJwt(jwt);
-        } catch (JwtException ex) {
-        }
-        return headerClaimsJwt;
+    public boolean validate(String token) {
+        return !isTokenExpired(token);
+    }
+
+    private Boolean isTokenExpired(String token) {
+        Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
+    }
+
+    private Date getExpirationDateFromToken(String token) {
+        return getClaimFromToken(token, Claims::getExpiration);
+    }
+
+    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = getAllClaimsFromToken(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token).getBody();
     }
 }

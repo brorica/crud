@@ -2,11 +2,8 @@ package com.crud.config.auth;
 
 import com.crud.config.auth.dto.OAuthAttributes;
 import com.crud.config.auth.dto.SessionUser;
-import com.crud.domain.token.AuthToken;
-import com.crud.domain.token.AuthTokenRepository;
 import com.crud.domain.user.User;
 import com.crud.domain.user.UserRepository;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.UUID;
 import javax.servlet.http.HttpSession;
@@ -29,7 +26,6 @@ import org.springframework.stereotype.Service;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
-    private final AuthTokenRepository authTokenRepository;
     private final HttpSession httpSession;
 
     @Override
@@ -46,8 +42,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes attributes = OAuthAttributes
             .of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-        User user = saveOrUpdateUser(attributes);
-        AuthToken authToken = saveOrUpdateToken(user);
+        User user = saveOrUpdate(attributes);
         httpSession.setAttribute("user", new SessionUser(user));
 
         return new DefaultOAuth2User(
@@ -57,21 +52,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         );
     }
 
-    private User saveOrUpdateUser(OAuthAttributes attributes) {
+    private User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findByEmail(attributes.getEmail())
             .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
             .orElse(attributes.toEntity());
 
         return userRepository.save(user);
-    }
-
-    private AuthToken saveOrUpdateToken(User user) {
-        AuthToken token = AuthToken.builder()
-            .uid(user.getId())
-            .accessToken(UUID.randomUUID())
-            .refreshToken(UUID.randomUUID())
-            .build();
-        authTokenRepository.save(token);
-        return token;
     }
 }

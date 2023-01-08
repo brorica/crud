@@ -37,6 +37,12 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role;
 
+    @Column
+    private String accessToken;
+
+    @Column
+    private String refreshToken;
+
     @Builder
     public User(String name, String authorities, String email, String picture, Role role) {
         this.name = name;

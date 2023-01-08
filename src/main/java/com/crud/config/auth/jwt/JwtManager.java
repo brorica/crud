@@ -1,6 +1,5 @@
 package com.crud.config.auth.jwt;
 
-import com.crud.domain.token.AuthToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,10 +19,8 @@ public class JwtManager {
     private final long duration = 60 * 60 * 1000;
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public String createJwt(AuthToken token) {
+    public String createJwt() {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(accessToken, token.getAccessToken());
-        claims.put(refreshToken, token.getRefreshToken());
         Date now = new Date();
         return Jwts.builder()
             .setSubject("crud")

@@ -3,6 +3,7 @@ package com.crud.config.auth.dto;
 import com.crud.domain.user.Role;
 import com.crud.domain.user.User;
 import java.util.Map;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -69,6 +70,8 @@ public class OAuthAttributes {
             .email(email)
             .picture(picture)
             .role(Role.USER)
+            .accessToken(UUID.randomUUID().toString())
+            .refreshToken(UUID.randomUUID().toString())
             .build();
     }
 }

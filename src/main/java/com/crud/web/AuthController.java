@@ -23,6 +23,8 @@ public class AuthController {
         AuthToken token = userService.getToken(email);
         response.addHeader("accessToken", jwtManager.createAccessToken(token.getAccessToken()));
         response.addHeader("refreshToken", jwtManager.createRefreshToken(token.getRefreshToken()));
+        System.out.println(response.getHeader("accessToken"));
+        System.out.println(response.getHeader("refreshToken"));
 //        response.sendRedirect("/");
 //        response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
     }

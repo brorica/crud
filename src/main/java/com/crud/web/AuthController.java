@@ -2,7 +2,6 @@ package com.crud.web;
 
 import com.crud.config.auth.jwt.JwtManager;
 import com.crud.domain.user.AuthToken;
-import com.crud.domain.user.UserRepository;
 import com.crud.service.user.UserService;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
@@ -19,7 +18,7 @@ public class AuthController {
     private final JwtManager jwtManager;
 
     @RequestMapping("/auth")
-    public void test(@RequestParam String email,
+    public void auth(@RequestParam String email,
         HttpServletResponse response) throws IOException {
         AuthToken token = userService.getToken(email);
         response.addHeader("accessToken", jwtManager.createAccessToken(token.getAccessToken()));

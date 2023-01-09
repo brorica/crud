@@ -9,5 +9,4 @@ public class AuthToken {
 
     private final String accessToken;
     private final String refreshToken;
-
 }

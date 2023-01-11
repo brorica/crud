@@ -70,8 +70,6 @@ public class OAuthAttributes {
             .email(email)
             .picture(picture)
             .role(Role.USER)
-            .accessToken(UUID.randomUUID().toString())
-            .refreshToken(UUID.randomUUID().toString())
             .build();
     }
 }

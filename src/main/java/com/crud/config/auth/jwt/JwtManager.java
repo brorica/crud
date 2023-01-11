@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtManager {
 
-    private final String refreshToken = "refreshToken";
-    private final String accessToken = "accessToken";
+    private final String REFRESH_TOKEN_KEY = "refreshToken";
+    private final String ACCESS_TOKEN_KEY = "accessToken";
     private final long accessTokenDuration = 60 * 60 * 1000;    // 1 hour
     private final long refreshTokenDuration = 7 * 24 * 60 * 60 * 1000;  // 1 week
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
@@ -22,7 +22,7 @@ public class JwtManager {
         Date now = new Date();
         return Jwts.builder()
             .setSubject("crud")
-            .claim(accessToken, token)
+            .claim(ACCESS_TOKEN_KEY, token)
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + accessTokenDuration))
             .signWith(key)
@@ -33,7 +33,7 @@ public class JwtManager {
         Date now = new Date();
         return Jwts.builder()
             .setSubject("crud")
-            .claim(refreshToken, token)
+            .claim(REFRESH_TOKEN_KEY, token)
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + refreshTokenDuration))
             .signWith(key)
@@ -67,11 +67,11 @@ public class JwtManager {
 
     public String getAccessTokenFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
-        return (String) claims.get(accessToken);
+        return (String) claims.get(ACCESS_TOKEN_KEY);
     }
 
     public String getRefreshTokenFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
-        return (String) claims.get(refreshToken);
+        return (String) claims.get(REFRESH_TOKEN_KEY);
     }
 }

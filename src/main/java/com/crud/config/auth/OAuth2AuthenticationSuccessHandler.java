@@ -4,9 +4,7 @@ import com.crud.config.auth.dto.CustomOauth2User;
 import com.crud.config.auth.jwt.JwtManager;
 import com.crud.domain.token.AuthToken;
 import com.crud.domain.token.AuthTokenRepository;
-import com.crud.service.user.UserService;
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -52,13 +50,14 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     protected String determineTargetUrl(HttpServletRequest request,
         HttpServletResponse response, AuthToken authToken) {
-        String targetUrl = getDefaultTargetUrl();
+        String targetUrl = "/auth";
         String accessTokenJwt = jwtManager.createAccessToken(authToken.getAccessToken());
         String refreshTokenJwt = jwtManager.createRefreshToken(authToken.getRefreshToken());
 
+        response.addHeader("access-token", accessTokenJwt);
+        response.addHeader("refresh-token", refreshTokenJwt);
+
         return UriComponentsBuilder.fromUriString(targetUrl)
-            .queryParam("access", accessTokenJwt)
-            .queryParam("refresh", refreshTokenJwt)
             .build().toUriString();
     }
 }

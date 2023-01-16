@@ -1,6 +1,7 @@
 package com.crud.config.auth;
 
 import com.crud.config.auth.dto.CustomOauth2User;
+import com.crud.config.auth.dto.TokenDto;
 import com.crud.config.auth.jwt.JwtManager;
 import com.crud.domain.token.AuthToken;
 import com.crud.domain.token.AuthTokenRepository;
@@ -20,43 +21,25 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
 
     private final JwtManager jwtManager;
-    private final AuthTokenRepository authTokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException, ServletException {
-        AuthToken authToken = saveToken(authentication);
-        String targetUrl = determineTargetUrl(request, response, authToken);
+        TokenDto token = parseToken(authentication);
+        String targetUrl = determineTargetUrl(request, response, token);
         clearAuthenticationAttributes(request);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
-    private AuthToken saveToken(Authentication authentication) {
-        Long uid = parseUid(authentication);
-        String accessToken = UUID.randomUUID().toString();
-        String refreshToken = UUID.randomUUID().toString();
-        AuthToken authToken = new AuthToken().builder()
-            .uid(uid)
-            .accessToken(accessToken)
-            .refreshToken(refreshToken)
-            .build();
-        return authTokenRepository.save(authToken);
-    }
 
-    private Long parseUid(Authentication authentication) {
+    private TokenDto parseToken(Authentication authentication) {
         CustomOauth2User userDetails = (CustomOauth2User) authentication.getPrincipal();
-        return userDetails.getUid();
+        return userDetails.getToken();
     }
 
     protected String determineTargetUrl(HttpServletRequest request,
-        HttpServletResponse response, AuthToken authToken) {
+        HttpServletResponse response, TokenDto token) {
         String targetUrl = getDefaultTargetUrl();
-        String accessTokenJwt = jwtManager.createAccessToken(authToken);
-        String refreshTokenJwt = jwtManager.createRefreshToken(authToken);
-
-        response.addHeader("access-token", accessTokenJwt);
-        response.addHeader("refresh-token", refreshTokenJwt);
-
         return UriComponentsBuilder.fromUriString(targetUrl)
             .build().toUriString();
     }

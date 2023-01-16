@@ -9,15 +9,12 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 @Getter
 public class CustomOauth2User extends DefaultOAuth2User {
 
-    private Long uid;
+    private TokenDto token;
 
-    private String email;
-
-    public CustomOauth2User(Long uid, String email,
+    public CustomOauth2User(TokenDto token,
         Collection<? extends GrantedAuthority> authorities,
         Map<String, Object> attributes, String nameAttributeKey) {
         super(authorities, attributes, nameAttributeKey);
-        this.uid = uid;
-        this.email = email;
+        this.token = token;
     }
 }

@@ -3,9 +3,13 @@ package com.crud.config.auth;
 import com.crud.config.auth.dto.CustomOauth2User;
 import com.crud.config.auth.dto.OAuthAttributes;
 import com.crud.config.auth.dto.SessionUser;
+import com.crud.config.auth.dto.TokenDto;
+import com.crud.domain.token.AuthToken;
+import com.crud.domain.token.AuthTokenRepository;
 import com.crud.domain.user.User;
 import com.crud.domain.user.UserRepository;
 import java.util.Collections;
+import java.util.UUID;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,6 +29,7 @@ import org.springframework.stereotype.Service;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
+    private final AuthTokenRepository authTokenRepository;
     private final HttpSession httpSession;
 
     @Override
@@ -42,11 +47,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             .of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
+        AuthToken authToken = saveOrUpdateToken(user);
         httpSession.setAttribute("user", new SessionUser(user));
 
         return new CustomOauth2User(
-            user.getId(),
-            user.getEmail(),
+            new TokenDto(authToken),
             Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
             attributes.getAttributes(),
             attributes.getNameAttributeKey()
@@ -58,5 +63,14 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
             .orElse(attributes.toEntity());
         return userRepository.save(user);
+    }
+
+    private AuthToken saveOrUpdateToken(User user) {
+        AuthToken authToken = AuthToken.builder()
+            .uid(user.getId())
+            .accessToken(UUID.randomUUID().toString())
+            .refreshToken(UUID.randomUUID().toString())
+            .build();
+        return authTokenRepository.save(authToken);
     }
 }

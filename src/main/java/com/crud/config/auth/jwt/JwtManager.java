@@ -1,5 +1,6 @@
 package com.crud.config.auth.jwt;
 
+import com.crud.config.auth.dto.TokenDto;
 import com.crud.domain.token.AuthToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -20,24 +21,24 @@ public class JwtManager {
     private final long refreshTokenDuration = 7 * 24 * 60 * 60 * 1000;  // 1 week
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    public String createAccessToken(AuthToken authToken) {
+    public String createAccessToken(TokenDto token) {
         Date now = new Date();
         return Jwts.builder()
             .setSubject("crud")
-            .claim(UID_KEY, authToken.getUid())
-            .claim(ACCESS_TOKEN_KEY, authToken.getAccessToken())
+            .claim(UID_KEY, token.getUid())
+            .claim(ACCESS_TOKEN_KEY, token.getAccessToken())
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + accessTokenDuration))
             .signWith(key)
             .compact();
     }
 
-    public String createRefreshToken(AuthToken authToken) {
+    public String createRefreshToken(TokenDto token) {
         Date now = new Date();
         return Jwts.builder()
             .setSubject("crud")
-            .claim(UID_KEY, authToken.getUid())
-            .claim(REFRESH_TOKEN_KEY, authToken.getRefreshToken())
+            .claim(UID_KEY, token.getUid())
+            .claim(REFRESH_TOKEN_KEY, token.getRefreshToken())
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + refreshTokenDuration))
             .signWith(key)

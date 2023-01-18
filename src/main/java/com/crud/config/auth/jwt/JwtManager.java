@@ -16,7 +16,7 @@ public class JwtManager {
     public static final String UID_KEY = "uid";
     public static final String REFRESH_TOKEN_KEY = "refresh-token";
     public static final String ACCESS_TOKEN_KEY = "access-token";
-    // private final long accessTokenDuration = 60 * 60 * 1000;    // 1 hour
+//     private final long accessTokenDuration = 60 * 60 * 1000;    // 1 hour
     private final long accessTokenDuration = 10;
     private final long refreshTokenDuration = 7 * 24 * 60 * 60 * 1000;  // 1 week
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);

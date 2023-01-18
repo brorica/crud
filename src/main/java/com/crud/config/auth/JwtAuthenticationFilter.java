@@ -1,6 +1,7 @@
 package com.crud.config.auth;
 
 import static com.crud.config.auth.jwt.JwtManager.ACCESS_TOKEN_KEY;
+import static com.crud.config.auth.jwt.JwtManager.REFRESH_TOKEN_KEY;
 
 import com.crud.config.auth.dto.TokenDto;
 import com.crud.config.auth.jwt.ExpireHandler;
@@ -24,21 +25,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final ExpireHandler expireHandler;
 
     /**
-     * TODO: jwt가 만료되면 파싱도 안 된다. DB의 스키마를 바꾸는 방향을 생각해야 할거 같다.
+     * TODO
+     * 1. 토큰 발급과 갱신을 객체로 만들어서 처리할 수 있는지 생각하기
+     * 2. refresh 토큰도 단순히 만료된 경우 어떻게 할지 생각하기
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = request.getHeader(ACCESS_TOKEN_KEY);
-        if (accessToken != null) {
+        String accessTokenHeaderValue = request.getHeader(ACCESS_TOKEN_KEY);
+        if (accessTokenHeaderValue != null) {
             try {
-                jwtManager.validate(accessToken);
+                jwtManager.validate(accessTokenHeaderValue);
             } catch (ExpiredJwtException e) {
-                logger.info(accessToken);
-                String accessTokenFromToken = jwtManager.getAccessTokenFromToken(accessToken);
-                TokenDto newToken = expireHandler.checkRefreshToken(accessTokenFromToken);
+                String refreshTokenHeaderValue = request.getHeader(REFRESH_TOKEN_KEY);
+                String accessToken = (String)e.getClaims().get(ACCESS_TOKEN_KEY);
+                String refreshToken = jwtManager.getRefreshTokenFromToken(refreshTokenHeaderValue);
+                logger.info("current : " + accessToken);
+                TokenDto newToken = expireHandler.checkRefreshToken(accessToken, refreshToken);
                 response.addHeader(ACCESS_TOKEN_KEY, jwtManager.createRefreshToken(newToken));
-                logger.info(newToken.getAccessToken());
+                logger.info("new : " + newToken.getAccessToken());
             }
         }
         filterChain.doFilter(request, response);

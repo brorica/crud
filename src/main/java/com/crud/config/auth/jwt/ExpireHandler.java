@@ -12,9 +12,9 @@ public class ExpireHandler {
 
     private final AuthTokenService authTokenService;
 
-    public TokenDto checkRefreshToken(String accessToken) {
+    public TokenDto checkRefreshToken(String accessToken, String refreshToken) {
         AuthToken token = authTokenService.getAuthToken(accessToken);
-        if (accessToken.equals(token.getRefreshToken())) {
+        if (refreshToken.equals(token.getRefreshToken())) {
             saveOrUpdateAccessToken(token);
         }
         return new TokenDto(token);

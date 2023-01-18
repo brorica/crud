@@ -1,7 +1,6 @@
 package com.crud.config.auth.jwt;
 
 import com.crud.config.auth.dto.TokenDto;
-import com.crud.domain.token.AuthToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -14,10 +13,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtManager {
 
-    private final String UID_KEY = "uid";
-    private final String REFRESH_TOKEN_KEY = "refreshToken";
-    private final String ACCESS_TOKEN_KEY = "accessToken";
-    private final long accessTokenDuration = 60 * 60 * 1000;    // 1 hour
+    public static final String UID_KEY = "uid";
+    public static final String REFRESH_TOKEN_KEY = "refresh-token";
+    public static final String ACCESS_TOKEN_KEY = "access-token";
+    // private final long accessTokenDuration = 60 * 60 * 1000;    // 1 hour
+    private final long accessTokenDuration = 10;
     private final long refreshTokenDuration = 7 * 24 * 60 * 60 * 1000;  // 1 week
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
@@ -78,5 +78,10 @@ public class JwtManager {
     public String getRefreshTokenFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
         return (String) claims.get(REFRESH_TOKEN_KEY);
+    }
+
+    public Long getUidFromToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        return (Long) claims.get(UID_KEY);
     }
 }

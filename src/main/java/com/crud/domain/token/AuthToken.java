@@ -1,5 +1,6 @@
 package com.crud.domain.token;
 
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,8 +35,7 @@ public class AuthToken {
         this.refreshToken = refreshToken;
     }
 
-    public AuthToken updateAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-        return this;
+    public void updateAccessToken() {
+        this.accessToken = UUID.randomUUID().toString();
     }
 }

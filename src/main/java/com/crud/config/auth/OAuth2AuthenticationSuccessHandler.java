@@ -2,11 +2,7 @@ package com.crud.config.auth;
 
 import com.crud.config.auth.dto.CustomOauth2User;
 import com.crud.config.auth.dto.TokenDto;
-import com.crud.config.auth.jwt.JwtManager;
-import com.crud.domain.token.AuthToken;
-import com.crud.domain.token.AuthTokenRepository;
 import java.io.IOException;
-import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +15,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
-
-    private final JwtManager jwtManager;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,

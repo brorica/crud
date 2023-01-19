@@ -1,12 +1,10 @@
 package com.crud.config.auth;
 
 import static com.crud.config.auth.jwt.JwtManager.ACCESS_TOKEN_KEY;
-import static com.crud.config.auth.jwt.JwtManager.REFRESH_TOKEN_KEY;
 
-import com.crud.config.auth.dto.TokenDto;
-import com.crud.config.auth.jwt.ExpireHandler;
-import com.crud.config.auth.jwt.JwtManager;
-import com.crud.domain.token.AuthToken;
+import com.crud.config.auth.jwt.JwtExpiredExceptionHandler;
+import com.crud.config.auth.jwt.JwtResolver;
+import com.crud.config.auth.jwt.JwtValidator;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -21,8 +19,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtManager jwtManager;
-    private final ExpireHandler expireHandler;
+    private final JwtResolver jwtResolver;
+    private final JwtValidator jwtValidator;
+    private final JwtExpiredExceptionHandler jwtExpiredExceptionHandler;
 
     /**
      * TODO
@@ -32,18 +31,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
-        String accessTokenHeaderValue = request.getHeader(ACCESS_TOKEN_KEY);
-        if (accessTokenHeaderValue != null) {
+        String authorizeJwt = jwtResolver.resolveAuthorizeToken(request);
+        if (authorizeJwt != null) {
             try {
-                jwtManager.validate(accessTokenHeaderValue);
+                jwtValidator.validate(authorizeJwt);
             } catch (ExpiredJwtException e) {
-                String refreshTokenHeaderValue = request.getHeader(REFRESH_TOKEN_KEY);
                 String accessToken = (String)e.getClaims().get(ACCESS_TOKEN_KEY);
-                String refreshToken = jwtManager.getRefreshTokenFromToken(refreshTokenHeaderValue);
-                logger.info("current : " + accessToken);
-                TokenDto newToken = expireHandler.checkRefreshToken(accessToken, refreshToken);
-                response.addHeader(ACCESS_TOKEN_KEY, jwtManager.createRefreshToken(newToken));
-                logger.info("new : " + newToken.getAccessToken());
+                jwtExpiredExceptionHandler.doHandle(request, accessToken);
             }
         }
         filterChain.doFilter(request, response);

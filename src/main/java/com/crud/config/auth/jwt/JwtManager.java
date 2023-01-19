@@ -1,13 +1,11 @@
 package com.crud.config.auth.jwt;
 
 import com.crud.config.auth.dto.TokenDto;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
-import java.util.function.Function;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,10 +14,10 @@ public class JwtManager {
     public static final String UID_KEY = "uid";
     public static final String REFRESH_TOKEN_KEY = "refresh-token";
     public static final String ACCESS_TOKEN_KEY = "access-token";
+    public static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 //     private final long accessTokenDuration = 60 * 60 * 1000;    // 1 hour
     private final long accessTokenDuration = 10;
     private final long refreshTokenDuration = 7 * 24 * 60 * 60 * 1000;  // 1 week
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
     public String createAccessToken(TokenDto token) {
         Date now = new Date();
@@ -29,7 +27,7 @@ public class JwtManager {
             .claim(ACCESS_TOKEN_KEY, token.getAccessToken())
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + accessTokenDuration))
-            .signWith(key)
+            .signWith(SECRET_KEY)
             .compact();
     }
 
@@ -41,47 +39,7 @@ public class JwtManager {
             .claim(REFRESH_TOKEN_KEY, token.getRefreshToken())
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + refreshTokenDuration))
-            .signWith(key)
+            .signWith(SECRET_KEY)
             .compact();
-    }
-
-    public boolean validate(String token) {
-        return !isTokenExpired(token);
-    }
-
-    private Boolean isTokenExpired(String token) {
-        Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
-    }
-
-    private Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
-    }
-
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token).getBody();
-    }
-
-    public String getAccessTokenFromToken(String token) {
-        Claims claims = getAllClaimsFromToken(token);
-        return (String) claims.get(ACCESS_TOKEN_KEY);
-    }
-
-    public String getRefreshTokenFromToken(String token) {
-        Claims claims = getAllClaimsFromToken(token);
-        return (String) claims.get(REFRESH_TOKEN_KEY);
-    }
-
-    public Long getUidFromToken(String token) {
-        Claims claims = getAllClaimsFromToken(token);
-        return (Long) claims.get(UID_KEY);
     }
 }

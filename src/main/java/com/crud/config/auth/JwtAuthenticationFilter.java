@@ -1,10 +1,14 @@
 package com.crud.config.auth;
 
 import static com.crud.config.auth.jwt.JwtManager.ACCESS_TOKEN_KEY;
+import static com.crud.config.auth.jwt.JwtResolver.AUTHORIZATION_HEADER;
 
+import com.crud.config.auth.dto.TokenDto;
 import com.crud.config.auth.jwt.JwtExpiredExceptionHandler;
+import com.crud.config.auth.jwt.JwtManager;
 import com.crud.config.auth.jwt.JwtResolver;
 import com.crud.config.auth.jwt.JwtValidator;
+import com.crud.domain.token.AuthToken;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -19,6 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final JwtManager jwtManager;
     private final JwtResolver jwtResolver;
     private final JwtValidator jwtValidator;
     private final JwtExpiredExceptionHandler jwtExpiredExceptionHandler;
@@ -37,7 +42,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 jwtValidator.validate(authorizeJwt);
             } catch (ExpiredJwtException e) {
                 String accessToken = (String)e.getClaims().get(ACCESS_TOKEN_KEY);
-                jwtExpiredExceptionHandler.doHandle(request, accessToken);
+                AuthToken authToken = jwtExpiredExceptionHandler.doHandle(request, accessToken);
+                response.addHeader(AUTHORIZATION_HEADER, jwtManager
+                    .createAccessToken(new TokenDto(authToken)));
             }
         }
         filterChain.doFilter(request, response);

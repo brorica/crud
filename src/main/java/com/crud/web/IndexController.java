@@ -8,7 +8,9 @@ import com.crud.config.auth.dto.CustomOauth2User;
 import com.crud.config.auth.dto.SessionUser;
 import com.crud.config.auth.dto.TokenDto;
 import com.crud.config.auth.jwt.JwtManager;
+import com.crud.domain.user.User;
 import com.crud.service.posts.PostsService;
+import com.crud.service.user.UserService;
 import com.crud.web.dto.PostsResponseDto;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class IndexController {
 
+    private final UserService userService;
     private final PostsService postsService;
     private final JwtManager jwtManager;
 
@@ -32,6 +35,8 @@ public class IndexController {
             TokenDto token = userDetails.getToken();
             response.addHeader(AUTHORIZATION_HEADER, jwtManager.createAccessToken(token));
             response.addHeader(REFRESH_TOKEN_KEY, jwtManager.createRefreshToken(token));
+            User test = userService.findById(token.getUid());
+            model.addAttribute("userName", test.getName());
         }
         model.addAttribute("posts", postsService.findAllDesc());
         if (user != null) {

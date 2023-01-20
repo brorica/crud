@@ -15,8 +15,8 @@ public class JwtManager {
     public static final String REFRESH_TOKEN_KEY = "refresh-token";
     public static final String ACCESS_TOKEN_KEY = "access-token";
     public static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-//     private final long accessTokenDuration = 60 * 60 * 1000;    // 1 hour
-    private final long accessTokenDuration = 10;
+    private final long accessTokenDuration = 60 * 60 * 1000;    // 1 hour
+//    private final long accessTokenDuration = 10;
     private final long refreshTokenDuration = 7 * 24 * 60 * 60 * 1000;  // 1 week
 
     public String createAccessToken(TokenDto token) {

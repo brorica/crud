@@ -1,5 +1,7 @@
 package com.crud.config.auth.jwt;
 
+import static com.crud.config.auth.jwt.JwtManager.REFRESH_KEY;
+
 import com.crud.domain.token.AuthToken;
 import com.crud.service.token.AuthTokenService;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +17,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtExpiredExceptionHandler {
 
-    private final JwtResolver jwtResolver;
     private final JwtParser jwtParser;
     private final AuthTokenService authTokenService;
 
@@ -25,7 +26,7 @@ public class JwtExpiredExceptionHandler {
     }
 
     private String paresRefreshToken(HttpServletRequest request) {
-        String refreshJWT = jwtResolver.resolveRefreshToken(request);
+        String refreshJWT = request.getHeader(REFRESH_KEY);
         return jwtParser.getRefreshTokenFromToken(refreshJWT);
     }
 

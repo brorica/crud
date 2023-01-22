@@ -1,7 +1,7 @@
 package com.crud.web;
 
-import static com.crud.config.auth.jwt.JwtManager.REFRESH_TOKEN_KEY;
-import static com.crud.config.auth.jwt.JwtResolver.AUTHORIZATION_HEADER;
+import static com.crud.config.auth.jwt.JwtManager.AUTHORIZATION_KEY;
+import static com.crud.config.auth.jwt.JwtManager.REFRESH_KEY;
 
 import com.crud.config.auth.LoginUser;
 import com.crud.config.auth.dto.CustomOauth2User;
@@ -33,8 +33,8 @@ public class IndexController {
         if (authentication != null) {
             CustomOauth2User userDetails = (CustomOauth2User) authentication.getPrincipal();
             TokenDto token = userDetails.getToken();
-            response.addHeader(AUTHORIZATION_HEADER, jwtManager.createAccessToken(token));
-            response.addHeader(REFRESH_TOKEN_KEY, jwtManager.createRefreshToken(token));
+            response.addHeader(AUTHORIZATION_KEY, jwtManager.createAccessToken(token));
+            response.addHeader(REFRESH_KEY, jwtManager.createRefreshToken(token));
             User test = userService.findById(token.getUid());
             model.addAttribute("userName", test.getName());
         }

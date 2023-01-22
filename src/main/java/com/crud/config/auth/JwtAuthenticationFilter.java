@@ -1,13 +1,11 @@
 package com.crud.config.auth;
 
-import static com.crud.config.auth.jwt.JwtManager.ACCESS_TOKEN_KEY;
-import static com.crud.config.auth.jwt.JwtResolver.AUTHORIZATION_HEADER;
+import static com.crud.config.auth.jwt.JwtManager.AUTHORIZATION_KEY;
 
 import com.crud.config.auth.dto.TokenDto;
 import com.crud.config.auth.jwt.JwtExpiredExceptionHandler;
 import com.crud.config.auth.jwt.JwtManager;
-import com.crud.config.auth.jwt.JwtResolver;
-import com.crud.config.auth.jwt.JwtValidator;
+import com.crud.config.auth.jwt.JwtParser;
 import com.crud.domain.token.AuthToken;
 import io.jsonwebtoken.ExpiredJwtException;
 import java.io.IOException;
@@ -24,8 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtManager jwtManager;
-    private final JwtResolver jwtResolver;
-    private final JwtValidator jwtValidator;
+    private final JwtParser jwtParser;
     private final JwtExpiredExceptionHandler jwtExpiredExceptionHandler;
 
     /**
@@ -36,17 +33,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
-        String authorizeJwt = jwtResolver.resolveAuthorizeToken(request);
-        if (authorizeJwt != null) {
-            try {
-                jwtValidator.validate(authorizeJwt);
-            } catch (ExpiredJwtException e) {
-                String accessToken = (String)e.getClaims().get(ACCESS_TOKEN_KEY);
-                AuthToken authToken = jwtExpiredExceptionHandler.doHandle(request, accessToken);
-                response.addHeader(AUTHORIZATION_HEADER, jwtManager
-                    .createAccessToken(new TokenDto(authToken)));
-            }
+        String authorizeJwt = request.getHeader(AUTHORIZATION_KEY);
+        if (authorizeJwt == null) {
+            // TODO 로그인 창으로 리다이렉트 처리
+            filterChain.doFilter(request, response);
+            return;
         }
+        checkAuthorizeJwt(request, response, authorizeJwt);
         filterChain.doFilter(request, response);
+    }
+
+    private void checkAuthorizeJwt(HttpServletRequest request, HttpServletResponse response, String authorizeJwt) {
+        try {
+            jwtParser.getAccessTokenFromToken(authorizeJwt);
+        } catch (ExpiredJwtException e) {
+            String accessToken = (String)e.getClaims().get(AUTHORIZATION_KEY);
+            AuthToken authToken = jwtExpiredExceptionHandler.doHandle(request, accessToken);
+            response.addHeader(AUTHORIZATION_KEY, jwtManager
+                .createAccessToken(new TokenDto(authToken)));
+        }
     }
 }

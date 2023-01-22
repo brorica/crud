@@ -1,7 +1,7 @@
 package com.crud.config.auth.jwt;
 
-import static com.crud.config.auth.jwt.JwtManager.ACCESS_TOKEN_KEY;
-import static com.crud.config.auth.jwt.JwtManager.REFRESH_TOKEN_KEY;
+import static com.crud.config.auth.jwt.JwtManager.AUTHORIZATION_KEY;
+import static com.crud.config.auth.jwt.JwtManager.REFRESH_KEY;
 import static com.crud.config.auth.jwt.JwtManager.SECRET_KEY;
 import static com.crud.config.auth.jwt.JwtManager.UID_KEY;
 
@@ -21,12 +21,12 @@ public class JwtParser {
 
     public String getAccessTokenFromToken(String jwt) {
         Claims claims = getAllClaimsFromToken(jwt);
-        return (String) claims.get(ACCESS_TOKEN_KEY);
+        return (String) claims.get(AUTHORIZATION_KEY);
     }
 
     public String getRefreshTokenFromToken(String jwt) {
         Claims claims = getAllClaimsFromToken(jwt);
-        return (String) claims.get(REFRESH_TOKEN_KEY);
+        return (String) claims.get(REFRESH_KEY);
     }
 
     public Long getUidFromToken(String jwt) {

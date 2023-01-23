@@ -1,22 +1,20 @@
 package com.crud.config.auth;
 
+import com.crud.config.auth.dto.CustomOauth2User;
 import com.crud.config.auth.dto.OAuthAttributes;
-import com.crud.config.auth.dto.SessionUser;
+import com.crud.config.auth.dto.TokenDto;
 import com.crud.domain.token.AuthToken;
 import com.crud.domain.token.AuthTokenRepository;
 import com.crud.domain.user.User;
 import com.crud.domain.user.UserRepository;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.UUID;
-import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +28,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private final UserRepository userRepository;
     private final AuthTokenRepository authTokenRepository;
-    private final HttpSession httpSession;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -46,32 +43,31 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuthAttributes attributes = OAuthAttributes
             .of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-        User user = saveOrUpdateUser(attributes);
+        User user = saveOrUpdate(attributes);
         AuthToken authToken = saveOrUpdateToken(user);
-        httpSession.setAttribute("user", new SessionUser(user));
 
-        return new DefaultOAuth2User(
+        return new CustomOauth2User(
+            new TokenDto(authToken),
             Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
             attributes.getAttributes(),
             attributes.getNameAttributeKey()
         );
     }
 
-    private User saveOrUpdateUser(OAuthAttributes attributes) {
+    private User saveOrUpdate(OAuthAttributes attributes) {
         User user = userRepository.findByEmail(attributes.getEmail())
             .map(entity -> entity.update(attributes.getName(), attributes.getPicture()))
             .orElse(attributes.toEntity());
-
         return userRepository.save(user);
     }
 
     private AuthToken saveOrUpdateToken(User user) {
-        AuthToken token = AuthToken.builder()
+        AuthToken authToken = AuthToken.builder()
             .uid(user.getId())
-            .accessToken(UUID.randomUUID())
-            .refreshToken(UUID.randomUUID())
+            .name(user.getName())
+            .accessToken(UUID.randomUUID().toString())
+            .refreshToken(UUID.randomUUID().toString())
             .build();
-        authTokenRepository.save(token);
-        return token;
+        return authTokenRepository.save(authToken);
     }
 }

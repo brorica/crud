@@ -16,11 +16,14 @@ import lombok.NoArgsConstructor;
 public class AuthToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private Long uid;
+
+    @Column(nullable = false)
+    private String name;
 
     @Column(nullable = false)
     private String accessToken;
@@ -29,10 +32,11 @@ public class AuthToken {
     private String refreshToken;
 
     @Builder
-    public AuthToken(Long uid, UUID accessToken, UUID refreshToken) {
+    public AuthToken(Long uid, String name, String accessToken, String refreshToken) {
         this.uid = uid;
-        this.accessToken = accessToken.toString();
-        this.refreshToken = refreshToken.toString();
+        this.name = name;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 
     public void updateAccessToken() {

@@ -1,6 +1,5 @@
 package com.crud.config.auth;
 
-import com.crud.config.auth.jwt.JwtRequestFilter;
 import com.crud.domain.user.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,8 +12,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomOAuth2UserService customOAuth2UserService;
-
-    private final JwtRequestFilter jwtRequestFilter;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -36,7 +35,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .oauth2Login()
                     .userInfoEndpoint()
-                        .userService(customOAuth2UserService);
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                        .userService(customOAuth2UserService)
+            .and()
+                .successHandler(oAuth2AuthenticationSuccessHandler);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

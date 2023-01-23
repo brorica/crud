@@ -1,7 +1,8 @@
 package com.crud.config.auth;
 
-import com.crud.config.auth.dto.SessionUser;
-import javax.servlet.http.HttpSession;
+import static com.crud.config.auth.jwt.JwtManager.AUTHORIZATION_KEY;
+
+import com.crud.config.auth.jwt.JwtParser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -17,26 +18,24 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final HttpSession httpSession;
+    private final JwtParser jwtParser;
 
-    /**
-     * 메소드의 파라미터가 해당 resolver 에서 지원하는지 확인
-     */
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         boolean isLoginUserAnnotation = parameter.getParameterAnnotation(LoginUser.class) != null;
-        boolean isUserClass = SessionUser.class.equals(parameter.getParameterType());
+        boolean isUserClass = String.class.equals(parameter.getParameterType());
         return isLoginUserAnnotation && isUserClass;
     }
 
-    /**
-     * supportsParameter 에서 지원하는 파라미터로 확인될 때의 처리 로직
-     */
     @Override
     public Object resolveArgument(MethodParameter parameter,
         ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest,
         WebDataBinderFactory binderFactory) throws Exception {
-        return httpSession.getAttribute("user");
+        String authorizeJwt = webRequest.getHeader(AUTHORIZATION_KEY);
+        if (authorizeJwt == null) {
+            return null;
+        }
+        return jwtParser.getNameFromToken(authorizeJwt);
     }
 }

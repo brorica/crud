@@ -23,14 +23,18 @@ public class AuthToken {
     private Long uid;
 
     @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
     private String accessToken;
 
     @Column(nullable = false)
     private String refreshToken;
 
     @Builder
-    public AuthToken(Long uid, String accessToken, String refreshToken) {
+    public AuthToken(Long uid, String name, String accessToken, String refreshToken) {
         this.uid = uid;
+        this.name = name;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }

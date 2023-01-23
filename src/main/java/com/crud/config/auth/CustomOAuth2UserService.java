@@ -2,7 +2,6 @@ package com.crud.config.auth;
 
 import com.crud.config.auth.dto.CustomOauth2User;
 import com.crud.config.auth.dto.OAuthAttributes;
-import com.crud.config.auth.dto.SessionUser;
 import com.crud.config.auth.dto.TokenDto;
 import com.crud.domain.token.AuthToken;
 import com.crud.domain.token.AuthTokenRepository;
@@ -10,7 +9,6 @@ import com.crud.domain.user.User;
 import com.crud.domain.user.UserRepository;
 import java.util.Collections;
 import java.util.UUID;
-import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -30,7 +28,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private final UserRepository userRepository;
     private final AuthTokenRepository authTokenRepository;
-    private final HttpSession httpSession;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -48,7 +45,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         User user = saveOrUpdate(attributes);
         AuthToken authToken = saveOrUpdateToken(user);
-        httpSession.setAttribute("user", new SessionUser(user));
 
         return new CustomOauth2User(
             new TokenDto(authToken),
@@ -68,6 +64,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private AuthToken saveOrUpdateToken(User user) {
         AuthToken authToken = AuthToken.builder()
             .uid(user.getId())
+            .name(user.getName())
             .accessToken(UUID.randomUUID().toString())
             .refreshToken(UUID.randomUUID().toString())
             .build();

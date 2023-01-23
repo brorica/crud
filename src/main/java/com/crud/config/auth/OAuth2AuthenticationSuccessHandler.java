@@ -16,6 +16,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Component
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler  {
 
+    private final String REDIRECT_URL = "/auth";
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
         Authentication authentication) throws IOException, ServletException {
@@ -33,7 +35,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     protected String determineTargetUrl(HttpServletRequest request,
         HttpServletResponse response, TokenDto token) {
-        String targetUrl = getDefaultTargetUrl();
+        String targetUrl = REDIRECT_URL;
         return UriComponentsBuilder.fromUriString(targetUrl)
             .build().toUriString();
     }

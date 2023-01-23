@@ -25,11 +25,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtParser jwtParser;
     private final JwtExpiredExceptionHandler jwtExpiredExceptionHandler;
 
-    /**
-     * TODO
-     * 1. 토큰 발급과 갱신을 객체로 만들어서 처리할 수 있는지 생각하기
-     * 2. refresh 토큰도 단순히 만료된 경우 어떻게 할지 생각하기
-     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {

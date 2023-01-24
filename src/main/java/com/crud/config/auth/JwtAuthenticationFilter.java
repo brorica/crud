@@ -30,22 +30,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
         String authorizeJwt = request.getHeader(AUTHORIZATION_KEY);
         if (authorizeJwt == null) {
-            // TODO 로그인 창으로 리다이렉트 처리
             filterChain.doFilter(request, response);
             return;
         }
-        checkAuthorizeJwt(request, response, authorizeJwt);
+        if (parseAuthorizeJwt(request, response, authorizeJwt) == null) {
+            return;
+        }
         filterChain.doFilter(request, response);
     }
 
-    private void checkAuthorizeJwt(HttpServletRequest request, HttpServletResponse response, String authorizeJwt) {
+    private AuthToken parseAuthorizeJwt(HttpServletRequest request, HttpServletResponse response, String authorizeJwt) {
+        AuthToken authToken = null;
         try {
             jwtParser.getAccessTokenFromToken(authorizeJwt);
         } catch (ExpiredJwtException e) {
             String accessToken = (String)e.getClaims().get(AUTHORIZATION_KEY);
-            AuthToken authToken = jwtExpiredExceptionHandler.doHandle(request, accessToken);
+            authToken = jwtExpiredExceptionHandler.doHandle(request, accessToken);
             response.addHeader(AUTHORIZATION_KEY, jwtManager
                 .createAccessToken(new TokenDto(authToken)));
         }
+        return authToken;
     }
 }

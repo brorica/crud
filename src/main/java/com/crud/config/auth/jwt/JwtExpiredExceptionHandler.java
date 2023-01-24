@@ -6,6 +6,7 @@ import com.crud.domain.token.AuthToken;
 import com.crud.service.token.AuthTokenService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
  * 요청에 사용된 access 토큰과 일치하는 refresh 토큰이 있다면 단순 만료로 보고, access 토큰을 갱신해서 준다.
  * 일치하는 refresh 토큰이 없다면, 로그아웃한 사용자의 토큰 정보를 사용한 것으로 간주. *
  */
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtExpiredExceptionHandler {
@@ -33,10 +35,10 @@ public class JwtExpiredExceptionHandler {
     private AuthToken tryAccessTokenUpdate(String accessToken, String refreshToken) {
         AuthToken authToken = authTokenService.getAuthToken(accessToken);
         if (refreshToken.equals(authToken.getRefreshToken())) {
-            System.out.println("current : " + authToken.getAccessToken());
+            log.info("current : " + authToken.getAccessToken());
             authToken.updateAccessToken();
             authTokenService.save(authToken);
-            System.out.println("new : " + authToken.getAccessToken());
+            log.info("new : " + authToken.getAccessToken());
             return authToken;
         }
         return null;

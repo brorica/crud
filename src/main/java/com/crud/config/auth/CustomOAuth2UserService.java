@@ -1,10 +1,12 @@
 package com.crud.config.auth;
 
+import com.crud.config.auth.dto.CustomSessionUserDetails;
 import com.crud.config.auth.dto.OAuthAttributes;
 import com.crud.config.auth.dto.SessionUser;
 import com.crud.domain.user.User;
 import com.crud.domain.user.UserRepository;
 import java.util.Collections;
+import java.util.UUID;
 import javax.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -38,13 +40,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             .of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
+        String sessionId = UUID.randomUUID().toString();
 
-        httpSession.setAttribute("user", new SessionUser(user));
+        httpSession.setAttribute(sessionId, new SessionUser(user));
 
-        return new DefaultOAuth2User(
+        return new CustomSessionUserDetails(
             Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
             attributes.getAttributes(),
-            attributes.getNameAttributeKey()
+            attributes.getNameAttributeKey(),
+            sessionId
         );
     }
 

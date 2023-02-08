@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ArticleService {
 
-    private ArticleRepository articleRepository;
+    private final ArticleRepository articleRepository;
 
     public Page<ArticleDto> findAllArticles(Pageable pageable) {
         return articleRepository.findAll(pageable)

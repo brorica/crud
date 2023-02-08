@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ArticleController {
 
-    private ArticleService articleService;
+    private final ArticleService articleService;
 
     @GetMapping("/article")
     public List<ArticleDto> find(@PageableDefault(size = 7) Pageable pageable) {
